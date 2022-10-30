@@ -13,9 +13,10 @@ func _enter_tree() -> void:
 	csg_button.pressed.connect(on_pressed)
 	file_dialog.file_selected.connect(on_file_selected)
 	
-	csg_button.text = "Export CSG as GLTF"
+	csg_button.hide()
+	csg_button.text = "Export CSG as GLB"
 	
-	file_dialog.add_filter("*.gltf")
+	file_dialog.add_filter("*.glb")
 	file_dialog.title = "Export GLTF to Filesystem"
 	
 	get_editor_interface().get_selection().selection_changed.connect(selection_changed)
@@ -28,9 +29,6 @@ func _exit_tree() -> void:
 
 func selection_changed() -> void:
 	var selected_nodes : Array[Node] = get_editor_interface().get_selection().get_selected_nodes()
-#	if selected.size() > 1 or selected.size() < 1:
-#		csg_button.hide()
-#		return
 	var node : Node = selected_nodes[-1]
 	if node is CSGShape3D:
 		if node.is_root_shape():
@@ -41,7 +39,7 @@ func selection_changed() -> void:
 	csg_button.hide()
 
 func on_pressed() -> void:
-	file_dialog.get_line_edit().text = str(selected.name, ".gltf")
+	file_dialog.get_line_edit().text = str(selected.name, ".glb")
 	file_dialog.popup_centered_ratio()
 
 func on_file_selected(path : String):
@@ -51,7 +49,7 @@ func export_mesh_as_gltf(mesh : Mesh, file_path : String) -> int:
 	var importer_mesh : ImporterMesh = ImporterMesh.new()
 	# taking mesh data from the Mesh resource and transfering it to ImporterMesh
 	for surface in mesh.get_surface_count():
-		importer_mesh.add_surface(mesh.surface_get_primitive_type(surface),mesh.surface_get_arrays(surface),[],{},mesh.surface_get_material(surface),str("mat",surface))
+		importer_mesh.add_surface(mesh.surface_get_primitive_type(surface),mesh.surface_get_arrays(surface),[],{},mesh.surface_get_material(surface))
 	
 	var gltf_mesh : GLTFMesh = GLTFMesh.new()
 	gltf_mesh.mesh = importer_mesh
