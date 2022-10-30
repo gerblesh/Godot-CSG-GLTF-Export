@@ -14,6 +14,7 @@ func _enter_tree() -> void:
 	file_dialog.file_selected.connect(on_file_selected)
 	
 	csg_button.hide()
+	csg_button.flat = true
 	csg_button.text = "Export CSG as GLB"
 	
 	file_dialog.add_filter("*.glb")
@@ -28,7 +29,11 @@ func _exit_tree() -> void:
 	csg_button.queue_free()
 
 func selection_changed() -> void:
+	
 	var selected_nodes : Array[Node] = get_editor_interface().get_selection().get_selected_nodes()
+	if selected_nodes == []:
+		csg_button.hide()
+		return
 	var node : Node = selected_nodes[-1]
 	if node is CSGShape3D:
 		if node.is_root_shape():
@@ -43,9 +48,9 @@ func on_pressed() -> void:
 	file_dialog.popup_centered_ratio()
 
 func on_file_selected(path : String):
-	export_mesh_as_gltf(selected.get_meshes()[-1],path)
+	export_mesh_as_glb(selected.get_meshes()[-1],path)
 
-func export_mesh_as_gltf(mesh : Mesh, file_path : String) -> int:
+func export_mesh_as_glb(mesh : Mesh, file_path : String) -> int:
 	var importer_mesh : ImporterMesh = ImporterMesh.new()
 	# taking mesh data from the Mesh resource and transfering it to ImporterMesh
 	for surface in mesh.get_surface_count():
